@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/HoseungJang/flick-touch-scroll/issues"
   },
-  "homepage": "https://github.com/HoseungJang/flick-touch-scroll#readme"
+  "homepage": "https://github.com/HoseungJang/flick-touch-scroll#readme",
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  }
 }
