@@ -1,0 +1,19 @@
+{
+  "name": "flick-touch-scroll",
+  "version": "0.0.0",
+  "description": "A flickable HTML touch scrolling",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HoseungJang/flick-touch-scroll.git"
+  },
+  "author": "HoseungJang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HoseungJang/flick-touch-scroll/issues"
+  },
+  "homepage": "https://github.com/HoseungJang/flick-touch-scroll#readme"
+}
