@@ -2,7 +2,8 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "nodenext",
+    "lib": ["dom", "ESNext"],
     "strict": true,
   },
-  "include": ["src"]
+  "include": ["src"],
 }
