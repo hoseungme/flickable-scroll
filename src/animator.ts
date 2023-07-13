@@ -47,13 +47,15 @@ type AnimationEvent = "animationStart" | "animationEnd";
 
 class Animation {
   private scroller: Scroller;
+  private startPosition: number;
   private distance: number;
   private duration: number;
   private frameId: number | null = null;
   private startedAt: number | null = null;
   public readonly events: Events<AnimationEvent, this>;
 
-  constructor(scroller: Scroller, { distance, duration }: AnimtionMeta) {
+  constructor(scroller: Scroller, { startPosition, distance, duration }: AnimtionMeta) {
+    this.startPosition = startPosition;
     this.scroller = scroller;
     this.distance = distance;
     this.duration = duration;
@@ -73,8 +75,8 @@ class Animation {
     const ellapsed = now - this.startedAt;
     const progress = this.duration === 0 ? 1 : ellapsed / this.duration;
 
-    const currentPosition = this.scroller.tracker.position;
-    const nextPosition = currentPosition + this.distance * progress;
+    const nextPosition = this.startPosition + this.distance * progress;
+    const distance = nextPosition - this.scroller.tracker.position;
 
     this.scroller.children.forEach((child) => {
       const x = this.scroller.direction === "x" ? nextPosition : 0;
@@ -82,7 +84,7 @@ class Animation {
       child.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
     });
 
-    this.scroller.tracker.move({ distance: nextPosition - currentPosition });
+    this.scroller.tracker.move({ distance });
 
     if (progress < 1) {
       this.requestNextFrame();

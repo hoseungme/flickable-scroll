@@ -29,6 +29,22 @@ export class Scroller {
     return this.options.direction ?? "y";
   }
 
+  protected start() {
+    this.animator.stop();
+    this.events.emit("scrollStart");
+  }
+
+  protected move({ distance }: { distance: number }) {
+    this.animator.start([{ startPosition: this.tracker.position, distance, duration: 0 }]);
+    this.events.emit("scrollMove");
+  }
+
+  protected end() {
+    const { distance, duration } = this.tracker.velocityToDistanceAndDuration();
+    this.animator.start([{ startPosition: this.tracker.position, distance, duration }]);
+    this.events.emit("scrollEnd");
+  }
+
   public destroy() {
     this.events.purge();
     this.animator.stop();
@@ -41,24 +57,24 @@ export class TouchScroller extends Scroller {
   constructor(container: HTMLElement, options?: ScrollerOptions) {
     super(container, options);
 
-    this.container.addEventListener("touchstart", this.start.bind(this));
-    this.container.addEventListener("touchmove", this.move.bind(this));
-    this.container.addEventListener("touchend", this.end.bind(this));
+    this.container.addEventListener("touchstart", this.touchstart.bind(this));
+    this.container.addEventListener("touchmove", this.touchmove.bind(this));
+    this.container.addEventListener("touchend", this.touchend.bind(this));
   }
 
   private parseTouch(touch: Touch) {
     return { position: this.options.direction === "x" ? touch.clientX : touch.clientY };
   }
 
-  private start(e: TouchEvent) {
+  private touchstart(e: TouchEvent) {
     const touch = this.parseTouch(e.changedTouches[0]);
 
     this.currentTouchPosition = touch.position;
 
-    this.events.emit("scrollStart");
+    this.start();
   }
 
-  private move(e: TouchEvent) {
+  private touchmove(e: TouchEvent) {
     if (this.currentTouchPosition == null) {
       return;
     }
@@ -66,22 +82,20 @@ export class TouchScroller extends Scroller {
     const touch = this.parseTouch(e.changedTouches[0]);
     const distance = touch.position - this.currentTouchPosition;
 
-    this.currentTouchPosition = touch.position;
-    this.animator.start([{ startPosition: this.tracker.position, distance, duration: 0 }]);
+    this.move({ distance });
 
-    this.events.emit("scrollMove");
+    this.currentTouchPosition = touch.position;
   }
 
-  private end() {
+  private touchend() {
     this.currentTouchPosition = null;
-
-    this.events.emit("scrollEnd");
+    this.end();
   }
 
   public destroy() {
-    this.container.removeEventListener("touchstart", this.start);
-    this.container.removeEventListener("touchmove", this.move);
-    this.container.removeEventListener("touchend", this.end);
+    this.container.removeEventListener("touchstart", this.touchstart.bind(this));
+    this.container.removeEventListener("touchmove", this.touchmove.bind(this));
+    this.container.removeEventListener("touchend", this.touchend.bind(this));
     super.destroy();
   }
 }
