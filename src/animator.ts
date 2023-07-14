@@ -75,8 +75,19 @@ class Animation {
     const ellapsed = now - this.startedAt;
     const progress = this.duration === 0 ? 1 : ellapsed / this.duration;
 
-    const nextPosition = this.startPosition + this.distance * progress;
-    const distance = nextPosition - this.scroller.tracker.position;
+    const nextPosition = (() => {
+      const value = this.startPosition + this.distance * progress;
+
+      if (value < this.scroller.tracker.minPosition) {
+        return this.scroller.tracker.minPosition;
+      }
+
+      if (value > this.scroller.tracker.maxPosition) {
+        return this.scroller.tracker.maxPosition;
+      }
+
+      return value;
+    })();
 
     this.scroller.children.forEach((child) => {
       const x = this.scroller.direction === "x" ? nextPosition : 0;
@@ -84,7 +95,7 @@ class Animation {
       child.style.transform = `translate3d(${x}px, ${y}px, 0px)`;
     });
 
-    this.scroller.tracker.move({ distance });
+    this.scroller.tracker.to(nextPosition);
 
     if (progress < 1) {
       this.requestNextFrame();
@@ -102,6 +113,7 @@ class Animation {
   private cancelFrame() {
     if (this.frameId != null) {
       window.cancelAnimationFrame(this.frameId);
+      this.frameId = null;
     }
   }
 

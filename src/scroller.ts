@@ -4,6 +4,7 @@ import { Tracker } from "./tracker";
 
 export interface ScrollerOptions {
   direction?: "x" | "y";
+  reverse?: boolean;
 }
 
 type ScrollEvent = "scrollStart" | "scrollMove" | "scrollEnd";
@@ -19,10 +20,14 @@ export class Scroller {
   constructor(container: HTMLElement, options?: ScrollerOptions) {
     this.container = container;
     this.children = Array.prototype.slice.call(this.container.children);
-    this.tracker = new Tracker();
+    this.options = options != null ? options : { direction: "y", reverse: false };
+    this.tracker = new Tracker(this);
     this.animator = new Animator(this);
     this.events = new Events<ScrollEvent, Scroller>(this);
-    this.options = options != null ? options : { direction: "y" };
+  }
+
+  public get reverse() {
+    return this.options.reverse ?? false;
   }
 
   public get direction() {

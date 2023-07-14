@@ -2,9 +2,26 @@ import { Measurement } from "./measurement";
 import { Scroller } from "./scroller";
 
 export class Tracker {
+  private _minPosition: number;
+  private _maxPosition: number;
   private _position: number = 0;
   private _direction: number = -1;
   private measurements: Measurement[] = [];
+
+  constructor(scroller: Scroller) {
+    const scrollHeight = scroller.children.reduce((a, b) => a + b.offsetHeight, 0) - scroller.container.offsetHeight;
+
+    this._minPosition = scroller.reverse ? 0 : scrollHeight * -1;
+    this._maxPosition = scroller.reverse ? scrollHeight : 0;
+  }
+
+  public get minPosition() {
+    return this._minPosition;
+  }
+
+  public get maxPosition() {
+    return this._maxPosition;
+  }
 
   public get position() {
     return this._position;
@@ -36,7 +53,6 @@ export class Tracker {
       { distance: 0, duration: 0, prevTimestamp: null as number | null }
     );
 
-    console.log(distance, duration, distance / duration, distance / (duration || 1));
     return distance / (duration || 1);
   }
 
@@ -61,7 +77,15 @@ export class Tracker {
     }
   }
 
-  public move({ distance }: { distance: number }) {
+  public to(to: number) {
+    const distance = to - this._position;
+
+    this._position = to;
+    this._direction = distance >= 0 ? 1 : -1;
+    this.measure({ position: this.position, distance, timestamp: Date.now() });
+  }
+
+  public move(distance: number) {
     this._position = this._position + distance;
     this._direction = distance >= 0 ? 1 : -1;
     this.measure({ position: this.position, distance, timestamp: Date.now() });
