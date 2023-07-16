@@ -56,6 +56,8 @@ export class Tracker {
     return distance / (duration || 1);
   }
 
+  // Thanks to
+  // https://github.com/rcbyr/keen-slider/blob/2e6b0d05658a1eaf3d400c05d1cc07e42ac98fb3/src/plugins/modes.ts#L153-L160
   public velocityToDistanceAndDuration() {
     const absVelocity = Math.abs(this.velocity);
     const decelerationRate = 0.000000147 + absVelocity / 1000;
