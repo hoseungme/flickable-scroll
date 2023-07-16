@@ -1,4 +1,4 @@
-# flicking-scroller
+# flickable-scroll
 
 A flickable web scroller
 
