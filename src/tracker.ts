@@ -1,6 +1,7 @@
 import { Events } from "./events";
 import { Measurement } from "./measurement";
 import { Scroller } from "./scroller";
+import { getElementSize } from "./utils/element";
 import { sign } from "./utils/sign";
 
 type TrackerEvent = "move";
@@ -17,13 +18,14 @@ export class Tracker {
 
   constructor(scroller: Scroller) {
     this.scroller = scroller;
-    const scrollHeight =
-      this.scroller.children.reduce((a, b) => a + b.offsetHeight, 0) - scroller.container.offsetHeight;
+    const containerSize = getElementSize(this.scroller.container, this.scroller.direction);
+    const scrollSize =
+      this.scroller.children.reduce((a, b) => a + getElementSize(b, this.scroller.direction), 0) - containerSize;
 
-    this._startPosition = this.scroller.reverse ? 0 : scrollHeight * -1;
-    this._endPosition = this.scroller.reverse ? scrollHeight : 0;
+    this._startPosition = this.scroller.reverse ? 0 : scrollSize * -1;
+    this._endPosition = this.scroller.reverse ? scrollSize : 0;
 
-    const maxOverflow = this.scroller.container.offsetHeight / 2;
+    const maxOverflow = containerSize / 2;
     this._minPosition = maxOverflow * (this.scroller.reverse ? -1 : 1);
     this._maxPosition = this._endPosition + maxOverflow * (this.scroller.reverse ? 1 : -1);
 
@@ -51,7 +53,7 @@ export class Tracker {
   }
 
   public get overflowRatio() {
-    const maxOverflow = this.scroller.container.offsetHeight / 2;
+    const maxOverflow = getElementSize(this.scroller.container, this.scroller.direction) / 2;
 
     if (this._position < this._startPosition) {
       return Math.abs((this._position - this._startPosition) / maxOverflow);
