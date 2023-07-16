@@ -3,6 +3,7 @@
     "module": "commonjs",
     "moduleResolution": "nodenext",
     "lib": ["dom", "ESNext"],
+    "declaration": true,
     "strict": true,
   },
   "include": ["src"],

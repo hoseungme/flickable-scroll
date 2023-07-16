@@ -1,8 +1,10 @@
 {
-  "name": "flicking-scroller",
+  "name": "flickable-scroll",
   "version": "0.0.0",
   "description": "A flickable web scroller",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "esm"],
   "exports": {
     ".": {
       "require": {
@@ -16,19 +18,28 @@
     }
   },
   "scripts": {
+    "build": "tsc --emitDeclarationOnly --outDir types && rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HoseungJang/flicking-scroller.git"
+    "url": "git+https://github.com/HoseungJang/flickable-scroll.git"
   },
   "author": "HoseungJang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/HoseungJang/flicking-scroller/issues"
+    "url": "https://github.com/HoseungJang/flickable-scroll/issues"
   },
-  "homepage": "https://github.com/HoseungJang/flicking-scroller#readme",
+  "homepage": "https://github.com/HoseungJang/flickable-scroll#readme",
   "devDependencies": {
+    "@babel/core": "^7.22.9",
+    "@babel/preset-env": "^7.22.9",
+    "@babel/preset-typescript": "^7.22.5",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^25.0.3",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "rollup": "^3.26.2",
+    "rollup-plugin-dts": "^5.3.0",
     "typescript": "^5.1.6"
   }
 }
