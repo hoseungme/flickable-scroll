@@ -1,7 +1,7 @@
 {
-  "name": "flick-touch-scroll",
+  "name": "flicking-scroller",
   "version": "0.0.0",
-  "description": "A flickable HTML touch scrolling",
+  "description": "A flickable web scroller",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

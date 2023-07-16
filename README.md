@@ -1,3 +1,3 @@
-# flick-touch-scroll
+# flicking-scroller
 
-A flickable HTML touch scrolling
+A flickable web scroller
