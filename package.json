@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HoseungJang/flick-touch-scroll.git"
+    "url": "git+https://github.com/HoseungJang/flicking-scroller.git"
   },
   "author": "HoseungJang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/HoseungJang/flick-touch-scroll/issues"
+    "url": "https://github.com/HoseungJang/flicking-scroller/issues"
   },
-  "homepage": "https://github.com/HoseungJang/flick-touch-scroll#readme",
+  "homepage": "https://github.com/HoseungJang/flicking-scroller#readme",
   "devDependencies": {
     "typescript": "^5.1.6"
   }
