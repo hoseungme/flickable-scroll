@@ -1,6 +1,7 @@
 import { Animator } from "./animator";
 import { Events } from "./events";
 import { Tracker } from "./tracker";
+import { easeOutCubic } from "./utils/easing";
 
 export interface ScrollerOptions {
   direction?: "x" | "y";
@@ -46,7 +47,7 @@ export class Scroller {
 
   protected end() {
     const { distance, duration } = this.tracker.velocityToDistanceAndDuration();
-    this.animator.start([{ startPosition: this.tracker.position, distance, duration }]);
+    this.animator.start([{ startPosition: this.tracker.position, distance, duration, easing: easeOutCubic }]);
     this.events.emit("scrollEnd");
   }
 

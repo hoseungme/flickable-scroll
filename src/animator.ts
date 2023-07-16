@@ -1,5 +1,6 @@
 import { Events } from "./events";
 import { Scroller } from "./scroller";
+import { linear } from "./utils/easing";
 
 export class Animator {
   private readonly scroller: Scroller;
@@ -41,24 +42,27 @@ interface AnimtionMeta {
   startPosition: number;
   distance: number;
   duration: number;
+  easing?: (x: number) => number;
 }
 
 type AnimationEvent = "animationStart" | "animationEnd";
 
 class Animation {
-  private scroller: Scroller;
-  private startPosition: number;
-  private distance: number;
-  private duration: number;
+  private readonly scroller: Scroller;
+  private readonly startPosition: number;
+  private readonly distance: number;
+  private readonly duration: number;
+  private readonly easing: (x: number) => number;
   private frameId: number | null = null;
   private startedAt: number | null = null;
   public readonly events: Events<AnimationEvent, this>;
 
-  constructor(scroller: Scroller, { startPosition, distance, duration }: AnimtionMeta) {
+  constructor(scroller: Scroller, { startPosition, distance, duration, easing }: AnimtionMeta) {
     this.startPosition = startPosition;
     this.scroller = scroller;
     this.distance = distance;
     this.duration = duration;
+    this.easing = easing ?? linear;
     this.events = new Events(this);
   }
 
@@ -73,7 +77,7 @@ class Animation {
     }
 
     const ellapsed = now - this.startedAt;
-    const progress = this.duration === 0 ? 1 : ellapsed / this.duration;
+    const progress = this.easing(this.duration === 0 ? 1 : ellapsed / this.duration);
 
     const nextPosition = (() => {
       const value = this.startPosition + this.distance * progress;
