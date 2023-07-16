@@ -1,6 +1,8 @@
 import { Events } from "./events";
 import { Scroller } from "./scroller";
+import { clamp } from "./utils/clamp";
 import { linear } from "./utils/easing";
+import { sign } from "./utils/sign";
 
 export class Animator {
   private readonly scroller: Scroller;
@@ -25,7 +27,7 @@ export class Animator {
     this.currentAnimation.start();
   }
 
-  public start(animations: AnimtionMeta[]) {
+  public start(animations: AnimationMeta[]) {
     if (this.isActive) {
       this.stop();
     }
@@ -38,7 +40,7 @@ export class Animator {
   }
 }
 
-interface AnimtionMeta {
+export interface AnimationMeta {
   startPosition: number;
   distance: number;
   duration: number;
@@ -57,7 +59,7 @@ class Animation {
   private startedAt: number | null = null;
   public readonly events: Events<AnimationEvent, this>;
 
-  constructor(scroller: Scroller, { startPosition, distance, duration, easing }: AnimtionMeta) {
+  constructor(scroller: Scroller, { startPosition, distance, duration, easing }: AnimationMeta) {
     this.startPosition = startPosition;
     this.scroller = scroller;
     this.distance = distance;
@@ -80,19 +82,9 @@ class Animation {
     const progress = this.duration === 0 ? 1 : ellapsed / this.duration;
     const distance = this.distance * this.easing(progress);
 
-    const nextPosition = (() => {
-      const value = this.startPosition + distance;
-
-      if (value < this.scroller.tracker.minPosition) {
-        return this.scroller.tracker.minPosition;
-      }
-
-      if (value > this.scroller.tracker.maxPosition) {
-        return this.scroller.tracker.maxPosition;
-      }
-
-      return value;
-    })();
+    const minPosition = this.scroller.tracker.minPosition;
+    const maxPosition = this.scroller.tracker.maxPosition;
+    const nextPosition = clamp(this.startPosition + distance, minPosition, maxPosition);
 
     this.scroller.children.forEach((child) => {
       const x = this.scroller.direction === "x" ? nextPosition : 0;
@@ -102,7 +94,10 @@ class Animation {
 
     this.scroller.tracker.to(nextPosition);
 
-    if (progress < 1) {
+    const shouldEnd =
+      (nextPosition <= minPosition || nextPosition >= maxPosition) && sign(nextPosition) === sign(this.distance);
+
+    if (!shouldEnd && progress < 1) {
       this.requestNextFrame();
       return;
     }

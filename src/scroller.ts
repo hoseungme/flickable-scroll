@@ -1,7 +1,9 @@
-import { Animator } from "./animator";
+import { Animator, AnimationMeta } from "./animator";
 import { Events } from "./events";
 import { Tracker } from "./tracker";
+import { clamp } from "./utils/clamp";
 import { easeOutCubic } from "./utils/easing";
+import { sign } from "./utils/sign";
 
 export interface ScrollerOptions {
   direction?: "x" | "y";
@@ -41,13 +43,43 @@ export class Scroller {
   }
 
   protected move({ distance }: { distance: number }) {
-    this.animator.start([{ startPosition: this.tracker.position, distance, duration: 0 }]);
+    const distanceRatio = sign(this.tracker.position) !== sign(distance) ? 1 : 1 - this.tracker.overflowRatio;
+
+    this.animator.start([{ startPosition: this.tracker.position, distance: distance * distanceRatio, duration: 0 }]);
     this.events.emit("scrollMove");
   }
 
   protected end() {
-    const { distance, duration } = this.tracker.velocityToDistanceAndDuration();
-    this.animator.start([{ startPosition: this.tracker.position, distance, duration, easing: easeOutCubic }]);
+    if (this.tracker.position < this.tracker.startPosition) {
+      const distance = this.tracker.startPosition - this.tracker.position;
+
+      this.animator.start([{ startPosition: this.tracker.position, distance, duration: 200, easing: easeOutCubic }]);
+    } else if (this.tracker.position > this.tracker.endPosition) {
+      const distance = this.tracker.endPosition - this.tracker.position;
+
+      this.animator.start([{ startPosition: this.tracker.position, distance, duration: 200, easing: easeOutCubic }]);
+    } else {
+      const animations: AnimationMeta[] = [];
+
+      const { distance, duration } = this.tracker.velocityToDistanceAndDuration();
+      animations.push({ startPosition: this.tracker.position, distance, duration, easing: easeOutCubic });
+
+      const nextPosition = this.tracker.position + distance;
+      if (nextPosition < this.tracker.startPosition) {
+        const startPosition = clamp(nextPosition, this.tracker.minPosition, this.tracker.startPosition);
+        const distance = this.tracker.startPosition - startPosition;
+
+        animations.push({ startPosition, distance, duration: 300, easing: easeOutCubic });
+      } else if (nextPosition > this.tracker.endPosition) {
+        const startPosition = clamp(nextPosition, this.tracker.endPosition, this.tracker.maxPosition);
+        const distance = this.tracker.endPosition - startPosition;
+
+        animations.push({ startPosition, distance, duration: 300, easing: easeOutCubic });
+      }
+
+      this.animator.start(animations);
+    }
+
     this.events.emit("scrollEnd");
   }
 
