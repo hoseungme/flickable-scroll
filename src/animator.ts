@@ -77,10 +77,11 @@ class Animation {
     }
 
     const ellapsed = now - this.startedAt;
-    const progress = this.easing(this.duration === 0 ? 1 : ellapsed / this.duration);
+    const progress = this.duration === 0 ? 1 : ellapsed / this.duration;
+    const distance = this.distance * this.easing(progress);
 
     const nextPosition = (() => {
-      const value = this.startPosition + this.distance * progress;
+      const value = this.startPosition + distance;
 
       if (value < this.scroller.tracker.minPosition) {
         return this.scroller.tracker.minPosition;
