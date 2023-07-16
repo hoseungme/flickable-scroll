@@ -1,5 +1,6 @@
 import { Measurement } from "./measurement";
 import { Scroller } from "./scroller";
+import { sign } from "./utils/sign";
 
 export class Tracker {
   private _minPosition: number;
@@ -38,7 +39,7 @@ export class Tracker {
           return { distance, duration, prevTimestamp };
         }
 
-        if (this.sign(distance) !== this.sign(measurement.distance)) {
+        if (sign(distance) !== sign(measurement.distance)) {
           distance = 0;
           duration = 0;
           prevTimestamp = null;
@@ -65,10 +66,6 @@ export class Tracker {
       distance: (Math.pow(absVelocity, 2) / decelerationRate) * this._direction,
       duration: absVelocity / decelerationRate,
     };
-  }
-
-  private sign(num: number) {
-    return num >= 0 ? 0 : 1;
   }
 
   private measure(measurement: Measurement) {
