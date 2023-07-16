@@ -82,8 +82,8 @@ class Animation {
     const progress = this.duration === 0 ? 1 : ellapsed / this.duration;
     const distance = this.distance * this.easing(progress);
 
-    const minPosition = this.scroller.tracker.minPosition;
-    const maxPosition = this.scroller.tracker.maxPosition;
+    const minPosition = this.scroller.tracker.minOverflowPosition;
+    const maxPosition = this.scroller.tracker.maxOverflowPosition;
     const nextPosition = clamp(this.startPosition + distance, minPosition, maxPosition);
 
     this.scroller.children.forEach((child) => {

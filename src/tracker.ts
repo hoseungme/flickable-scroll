@@ -8,10 +8,10 @@ type TrackerEvent = "move";
 
 export class Tracker {
   private readonly scroller: Scroller;
-  private _startPosition: number;
-  private _endPosition: number;
   private _minPosition: number;
   private _maxPosition: number;
+  private _minOverflowPosition: number;
+  private _maxOverflowPosition: number;
   private _position: number = 0;
   private measurements: Measurement[] = [];
   public readonly events: Events<TrackerEvent, this>;
@@ -22,12 +22,12 @@ export class Tracker {
     const scrollSize =
       this.scroller.children.reduce((a, b) => a + getElementSize(b, this.scroller.direction), 0) - containerSize;
 
-    this._startPosition = this.scroller.reverse ? 0 : scrollSize * -1;
-    this._endPosition = this.scroller.reverse ? scrollSize : 0;
+    this._minPosition = this.scroller.reverse ? 0 : scrollSize * -1;
+    this._maxPosition = this.scroller.reverse ? scrollSize : 0;
 
     const maxOverflow = containerSize / 2;
-    this._minPosition = maxOverflow * (this.scroller.reverse ? -1 : 1);
-    this._maxPosition = this._endPosition + maxOverflow * (this.scroller.reverse ? 1 : -1);
+    this._minOverflowPosition = this._minPosition - maxOverflow;
+    this._maxOverflowPosition = this._maxPosition + maxOverflow;
 
     this.events = new Events(this);
   }
@@ -44,23 +44,21 @@ export class Tracker {
     return this._maxPosition;
   }
 
-  public get startPosition() {
-    return this._startPosition;
+  public get minOverflowPosition() {
+    return this._minOverflowPosition;
   }
 
-  public get endPosition() {
-    return this._endPosition;
+  public get maxOverflowPosition() {
+    return this._maxOverflowPosition;
   }
 
   public get overflowRatio() {
-    const maxOverflow = getElementSize(this.scroller.container, this.scroller.direction) / 2;
-
-    if (this._position < this._startPosition) {
-      return Math.abs((this._position - this._startPosition) / maxOverflow);
+    if (this._position < this._minPosition) {
+      return Math.abs((this._position - this._minPosition) / (this._minPosition - this._minOverflowPosition));
     }
 
-    if (this._position > this._endPosition) {
-      return Math.abs((this._position - this._endPosition) / maxOverflow);
+    if (this._position > this._maxPosition) {
+      return Math.abs((this._position - this._maxPosition) / (this._maxPosition - this._maxOverflowPosition));
     }
 
     return 0;
