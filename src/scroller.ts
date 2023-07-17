@@ -8,9 +8,12 @@ import { sign } from "./utils/sign";
 export interface ScrollerOptions {
   direction?: "x" | "y";
   reverse?: boolean;
+  onScrollStart?: (e: Scroller) => void;
+  onScrollMove?: (e: Scroller) => void;
+  onScrollEnd?: (e: Scroller) => void;
 }
 
-export type ScrollerEvent = "scrollStart" | "scrollMove" | "scrollEnd";
+type ScrollerEvent = "scrollStart" | "scrollMove" | "scrollEnd";
 
 export class Scroller {
   public readonly container: HTMLElement;
@@ -28,6 +31,18 @@ export class Scroller {
     this.tracker = new Tracker(this);
     this.animator = new Animator(this);
     this.events = new Events<ScrollerEvent, Scroller>(this);
+
+    if (options?.onScrollStart != null) {
+      this.events.on("scrollStart", options.onScrollStart);
+    }
+
+    if (options?.onScrollMove != null) {
+      this.events.on("scrollMove", options.onScrollMove);
+    }
+
+    if (options?.onScrollEnd != null) {
+      this.events.on("scrollEnd", options.onScrollEnd);
+    }
   }
 
   public get reverse() {
