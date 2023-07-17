@@ -1,10 +1,13 @@
 {
   "name": "flickable-scroll",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A flickable web scroller",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "esm"],
+  "files": [
+    "dist",
+    "esm"
+  ],
   "exports": {
     ".": {
       "require": {
