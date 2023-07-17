@@ -5,6 +5,7 @@
     "lib": ["dom", "ESNext"],
     "declaration": true,
     "strict": true,
+    "isolatedModules": true
   },
-  "include": ["src"],
+  "include": ["src"]
 }
