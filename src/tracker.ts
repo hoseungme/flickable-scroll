@@ -103,7 +103,7 @@ export class Tracker {
   public velocityToDistanceAndDuration() {
     const velocity = this.velocity;
     const absVelocity = Math.abs(velocity);
-    const decelerationRate = 0.000000147 + absVelocity / 1000;
+    const decelerationRate = 0.000000147 + absVelocity / 600;
     return {
       distance: (Math.pow(absVelocity, 2) / decelerationRate) * sign(velocity),
       duration: absVelocity / decelerationRate,
