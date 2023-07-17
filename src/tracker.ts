@@ -72,23 +72,25 @@ export class Tracker {
   }
 
   public get velocity() {
+    const now = Date.now();
     const { distance, duration } = this.measurements.reduce(
-      ({ distance, duration, prevTimestamp }, measurement) => {
-        if (Date.now() - measurement.timestamp >= 200) {
-          return { distance, duration, prevTimestamp };
+      (accumulated, measurement) => {
+        if (now - measurement.timestamp > 200) {
+          return accumulated;
         }
 
         if (sign(distance) !== sign(measurement.distance)) {
-          distance = 0;
-          duration = 0;
-          prevTimestamp = null;
+          accumulated = { distance: 0, duration: 0, prevTimestamp: 0 };
         }
 
-        return {
-          distance: distance + measurement.distance,
-          duration: prevTimestamp != null ? duration + (measurement.timestamp - prevTimestamp) : 0,
-          prevTimestamp: measurement.timestamp,
-        };
+        if (accumulated.prevTimestamp != null) {
+          accumulated.distance += measurement.distance;
+          accumulated.duration += measurement.timestamp - accumulated.prevTimestamp;
+        }
+
+        accumulated.prevTimestamp = measurement.timestamp;
+
+        return accumulated;
       },
       { distance: 0, duration: 0, prevTimestamp: null as number | null }
     );
@@ -111,8 +113,8 @@ export class Tracker {
   private measure(measurement: Measurement) {
     this.measurements.push(measurement);
 
-    if (this.measurements.length >= 10) {
-      this.measurements = this.measurements.slice(-10);
+    if (this.measurements.length > 6) {
+      this.measurements = this.measurements.slice(-6);
     }
   }
 
