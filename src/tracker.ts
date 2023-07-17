@@ -1,3 +1,4 @@
+import ResizeObserver from "resize-observer-polyfill";
 import { Events } from "./events";
 import { Measurement } from "./measurement";
 import { Scroller } from "./scroller";
@@ -18,9 +19,10 @@ export class Tracker {
 
   constructor(scroller: Scroller) {
     this.scroller = scroller;
+
     const containerSize = getElementSize(this.scroller.container, this.scroller.direction);
-    const scrollSize =
-      this.scroller.children.reduce((a, b) => a + getElementSize(b, this.scroller.direction), 0) - containerSize;
+    const childrenSize = this.scroller.children.reduce((a, b) => a + getElementSize(b, this.scroller.direction), 0);
+    const scrollSize = childrenSize - containerSize;
 
     this._minPosition = this.scroller.reverse ? 0 : scrollSize * -1;
     this._maxPosition = this.scroller.reverse ? scrollSize : 0;
@@ -30,6 +32,11 @@ export class Tracker {
     this._maxOverflowPosition = this._maxPosition + maxOverflow;
 
     this.events = new Events(this);
+
+    const resizeObserver = new ResizeObserver(this.resize.bind(this));
+
+    resizeObserver.observe(this.scroller.container);
+    this.scroller.children.forEach((child) => resizeObserver.observe(child));
   }
 
   public get position() {
@@ -120,5 +127,18 @@ export class Tracker {
     this._position = this._position + distance;
     this.measure({ position: this.position, distance, timestamp: Date.now() });
     this.events.emit("move");
+  }
+
+  public resize() {
+    const containerSize = getElementSize(this.scroller.container, this.scroller.direction);
+    const childrenSize = this.scroller.children.reduce((a, b) => a + getElementSize(b, this.scroller.direction), 0);
+    const scrollSize = childrenSize - containerSize;
+
+    this._minPosition = this.scroller.reverse ? 0 : scrollSize * -1;
+    this._maxPosition = this.scroller.reverse ? scrollSize : 0;
+
+    const maxOverflow = containerSize / 2;
+    this._minOverflowPosition = this._minPosition - maxOverflow;
+    this._maxOverflowPosition = this._maxPosition + maxOverflow;
   }
 }
