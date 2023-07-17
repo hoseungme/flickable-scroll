@@ -48,29 +48,22 @@ export class Scroller {
   constructor(container: HTMLElement, options?: ScrollerOptions) {
     this.container = container;
     this.children = Array.prototype.slice.call(this.container.children);
-    this.options =
-      options != null ? options : { direction: "y", reverse: false };
+    this.options = options != null ? options : { direction: "y", reverse: false };
     this.tracker = new Tracker(this);
     this.animator = new Animator(this);
     this.events = new Events<ScrollerEvent, Scroller>(this);
 
     const { onScrollStart, onScrollMove, onScrollEnd } = this.options;
     if (onScrollStart != null) {
-      this.events.on("scrollStart", () =>
-        onScrollStart(scrollerToScrollEvent(this))
-      );
+      this.events.on("scrollStart", () => onScrollStart(scrollerToScrollEvent(this)));
     }
 
     if (onScrollMove != null) {
-      this.events.on("scrollMove", () =>
-        onScrollMove(scrollerToScrollEvent(this))
-      );
+      this.events.on("scrollMove", () => onScrollMove(scrollerToScrollEvent(this)));
     }
 
     if (onScrollEnd != null) {
-      this.events.on("scrollEnd", () =>
-        onScrollEnd(scrollerToScrollEvent(this))
-      );
+      this.events.on("scrollEnd", () => onScrollEnd(scrollerToScrollEvent(this)));
     }
   }
 
@@ -88,10 +81,7 @@ export class Scroller {
   }
 
   protected move({ distance }: { distance: number }) {
-    const distanceRatio =
-      sign(this.tracker.position) !== sign(distance)
-        ? 1
-        : 1 - this.tracker.overflowRatio;
+    const distanceRatio = sign(this.tracker.position) !== sign(distance) ? 1 : 1 - this.tracker.overflowRatio;
 
     this.animator.start([
       {
@@ -129,8 +119,7 @@ export class Scroller {
     } else {
       const animations: AnimationMeta[] = [];
 
-      const { distance, duration } =
-        this.tracker.velocityToDistanceAndDuration();
+      const { distance, duration } = this.tracker.velocityToDistanceAndDuration();
       animations.push({
         startPosition: this.tracker.position,
         distance,
@@ -140,11 +129,7 @@ export class Scroller {
 
       const nextPosition = this.tracker.position + distance;
       if (nextPosition <= this.tracker.minPosition) {
-        const startPosition = clamp(
-          nextPosition,
-          this.tracker.minOverflowPosition,
-          this.tracker.minPosition
-        );
+        const startPosition = clamp(nextPosition, this.tracker.minOverflowPosition, this.tracker.minPosition);
         const distance = this.tracker.minPosition - startPosition;
 
         animations.push({
@@ -154,11 +139,7 @@ export class Scroller {
           easing: easeOutCubic,
         });
       } else if (nextPosition >= this.tracker.maxPosition) {
-        const startPosition = clamp(
-          nextPosition,
-          this.tracker.maxPosition,
-          this.tracker.maxOverflowPosition
-        );
+        const startPosition = clamp(nextPosition, this.tracker.maxPosition, this.tracker.maxOverflowPosition);
         const distance = this.tracker.maxPosition - startPosition;
 
         animations.push({
@@ -225,10 +206,7 @@ export class TouchScroller extends Scroller {
   }
 
   public destroy() {
-    this.container.removeEventListener(
-      "touchstart",
-      this.touchstart.bind(this)
-    );
+    this.container.removeEventListener("touchstart", this.touchstart.bind(this));
     this.container.removeEventListener("touchmove", this.touchmove.bind(this));
     this.container.removeEventListener("touchend", this.touchend.bind(this));
     super.destroy();

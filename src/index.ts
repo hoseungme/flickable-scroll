@@ -1,9 +1,4 @@
-import {
-  Scroller,
-  ScrollerOptions,
-  ScrollEvent,
-  TouchScroller,
-} from "./scroller";
+import { Scroller, ScrollerOptions, ScrollEvent, TouchScroller } from "./scroller";
 
 class FlickableScroller {
   private readonly scroller: Scroller;
