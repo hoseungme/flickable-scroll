@@ -8,12 +8,34 @@ import { sign } from "./utils/sign";
 export interface ScrollerOptions {
   direction?: "x" | "y";
   reverse?: boolean;
-  onScrollStart?: (e: Scroller) => void;
-  onScrollMove?: (e: Scroller) => void;
-  onScrollEnd?: (e: Scroller) => void;
+  onScrollStart?: (e: ScrollEvent) => void;
+  onScrollMove?: (e: ScrollEvent) => void;
+  onScrollEnd?: (e: ScrollEvent) => void;
 }
 
 type ScrollerEvent = "scrollStart" | "scrollMove" | "scrollEnd";
+
+function scrollerToScrollEvent(scroller: Scroller): ScrollEvent {
+  return {
+    position: scroller.tracker.position,
+    minPosition: scroller.tracker.minPosition,
+    maxPosition: scroller.tracker.maxPosition,
+    minOverflowPosition: scroller.tracker.minOverflowPosition,
+    maxOverflowPosition: scroller.tracker.maxOverflowPosition,
+    isScrollTop: scroller.tracker.position >= scroller.tracker.maxPosition,
+    isScrollBottom: scroller.tracker.position <= scroller.tracker.minPosition,
+  };
+}
+
+export interface ScrollEvent {
+  position: number;
+  minPosition: number;
+  maxPosition: number;
+  minOverflowPosition: number;
+  maxOverflowPosition: number;
+  isScrollTop: boolean;
+  isScrollBottom: boolean;
+}
 
 export class Scroller {
   public readonly container: HTMLElement;
@@ -32,16 +54,23 @@ export class Scroller {
     this.animator = new Animator(this);
     this.events = new Events<ScrollerEvent, Scroller>(this);
 
-    if (options?.onScrollStart != null) {
-      this.events.on("scrollStart", options.onScrollStart);
+    const { onScrollStart, onScrollMove, onScrollEnd } = this.options;
+    if (onScrollStart != null) {
+      this.events.on("scrollStart", () =>
+        onScrollStart(scrollerToScrollEvent(this))
+      );
     }
 
-    if (options?.onScrollMove != null) {
-      this.events.on("scrollMove", options.onScrollMove);
+    if (onScrollMove != null) {
+      this.events.on("scrollMove", () =>
+        onScrollMove(scrollerToScrollEvent(this))
+      );
     }
 
-    if (options?.onScrollEnd != null) {
-      this.events.on("scrollEnd", options.onScrollEnd);
+    if (onScrollEnd != null) {
+      this.events.on("scrollEnd", () =>
+        onScrollEnd(scrollerToScrollEvent(this))
+      );
     }
   }
 
