@@ -10,23 +10,24 @@ export interface ScrollerOptions {
   reverse?: boolean;
 }
 
-type ScrollEvent = "scrollStart" | "scrollMove" | "scrollEnd";
+export type ScrollerEvent = "scrollStart" | "scrollMove" | "scrollEnd";
 
 export class Scroller {
   public readonly container: HTMLElement;
   public readonly children: HTMLElement[];
   public readonly tracker: Tracker;
   public readonly animator: Animator;
-  public readonly events: Events<ScrollEvent, Scroller>;
+  public readonly events: Events<ScrollerEvent, Scroller>;
   protected readonly options: ScrollerOptions;
 
   constructor(container: HTMLElement, options?: ScrollerOptions) {
     this.container = container;
     this.children = Array.prototype.slice.call(this.container.children);
-    this.options = options != null ? options : { direction: "y", reverse: false };
+    this.options =
+      options != null ? options : { direction: "y", reverse: false };
     this.tracker = new Tracker(this);
     this.animator = new Animator(this);
-    this.events = new Events<ScrollEvent, Scroller>(this);
+    this.events = new Events<ScrollerEvent, Scroller>(this);
   }
 
   public get reverse() {
@@ -43,9 +44,18 @@ export class Scroller {
   }
 
   protected move({ distance }: { distance: number }) {
-    const distanceRatio = sign(this.tracker.position) !== sign(distance) ? 1 : 1 - this.tracker.overflowRatio;
+    const distanceRatio =
+      sign(this.tracker.position) !== sign(distance)
+        ? 1
+        : 1 - this.tracker.overflowRatio;
 
-    this.animator.start([{ startPosition: this.tracker.position, distance: distance * distanceRatio, duration: 0 }]);
+    this.animator.start([
+      {
+        startPosition: this.tracker.position,
+        distance: distance * distanceRatio,
+        duration: 0,
+      },
+    ]);
     this.events.emit("scrollMove");
   }
 
@@ -53,28 +63,66 @@ export class Scroller {
     if (this.tracker.position < this.tracker.minPosition) {
       const distance = this.tracker.minPosition - this.tracker.position;
 
-      this.animator.start([{ startPosition: this.tracker.position, distance, duration: 200, easing: easeOutCubic }]);
+      this.animator.start([
+        {
+          startPosition: this.tracker.position,
+          distance,
+          duration: 200,
+          easing: easeOutCubic,
+        },
+      ]);
     } else if (this.tracker.position > this.tracker.maxPosition) {
       const distance = this.tracker.maxPosition - this.tracker.position;
 
-      this.animator.start([{ startPosition: this.tracker.position, distance, duration: 200, easing: easeOutCubic }]);
+      this.animator.start([
+        {
+          startPosition: this.tracker.position,
+          distance,
+          duration: 200,
+          easing: easeOutCubic,
+        },
+      ]);
     } else {
       const animations: AnimationMeta[] = [];
 
-      const { distance, duration } = this.tracker.velocityToDistanceAndDuration();
-      animations.push({ startPosition: this.tracker.position, distance, duration, easing: easeOutCubic });
+      const { distance, duration } =
+        this.tracker.velocityToDistanceAndDuration();
+      animations.push({
+        startPosition: this.tracker.position,
+        distance,
+        duration,
+        easing: easeOutCubic,
+      });
 
       const nextPosition = this.tracker.position + distance;
       if (nextPosition <= this.tracker.minPosition) {
-        const startPosition = clamp(nextPosition, this.tracker.minOverflowPosition, this.tracker.minPosition);
+        const startPosition = clamp(
+          nextPosition,
+          this.tracker.minOverflowPosition,
+          this.tracker.minPosition
+        );
         const distance = this.tracker.minPosition - startPosition;
 
-        animations.push({ startPosition, distance, duration: 300, easing: easeOutCubic });
+        animations.push({
+          startPosition,
+          distance,
+          duration: 300,
+          easing: easeOutCubic,
+        });
       } else if (nextPosition >= this.tracker.maxPosition) {
-        const startPosition = clamp(nextPosition, this.tracker.maxPosition, this.tracker.maxOverflowPosition);
+        const startPosition = clamp(
+          nextPosition,
+          this.tracker.maxPosition,
+          this.tracker.maxOverflowPosition
+        );
         const distance = this.tracker.maxPosition - startPosition;
 
-        animations.push({ startPosition, distance, duration: 300, easing: easeOutCubic });
+        animations.push({
+          startPosition,
+          distance,
+          duration: 300,
+          easing: easeOutCubic,
+        });
       }
 
       this.animator.start(animations);
@@ -101,7 +149,9 @@ export class TouchScroller extends Scroller {
   }
 
   private parseTouch(touch: Touch) {
-    return { position: this.options.direction === "x" ? touch.clientX : touch.clientY };
+    return {
+      position: this.options.direction === "x" ? touch.clientX : touch.clientY,
+    };
   }
 
   private touchstart(e: TouchEvent) {
@@ -131,7 +181,10 @@ export class TouchScroller extends Scroller {
   }
 
   public destroy() {
-    this.container.removeEventListener("touchstart", this.touchstart.bind(this));
+    this.container.removeEventListener(
+      "touchstart",
+      this.touchstart.bind(this)
+    );
     this.container.removeEventListener("touchmove", this.touchmove.bind(this));
     this.container.removeEventListener("touchend", this.touchend.bind(this));
     super.destroy();
