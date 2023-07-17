@@ -80,7 +80,7 @@ export class Tracker {
         }
 
         if (sign(distance) !== sign(measurement.distance)) {
-          accumulated = { distance: 0, duration: 0, prevTimestamp: 0 };
+          accumulated = { distance: 0, duration: 0, prevTimestamp: null };
         }
 
         if (accumulated.prevTimestamp != null) {
