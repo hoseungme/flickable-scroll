@@ -1,7 +1,11 @@
-import { Events } from "./events";
-import { Scroller, ScrollerOptions, TouchScroller } from "./scroller";
+import {
+  Scroller,
+  ScrollerOptions,
+  ScrollEvent,
+  TouchScroller,
+} from "./scroller";
 
-export class FlickableScroller {
+class FlickableScroller {
   private readonly scroller: Scroller;
 
   constructor(container: HTMLElement, options?: ScrollerOptions) {
@@ -12,3 +16,5 @@ export class FlickableScroller {
     this.scroller.destroy();
   }
 }
+
+export { FlickableScroller, ScrollerOptions, ScrollEvent };
