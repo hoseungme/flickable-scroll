@@ -79,7 +79,7 @@ export class Tracker {
           return accumulated;
         }
 
-        if (sign(distance) !== sign(measurement.distance)) {
+        if (accumulated.distance !== 0 && sign(accumulated.distance) !== sign(measurement.distance)) {
           accumulated = { distance: 0, duration: 0, prevTimestamp: null };
         }
 
