@@ -17,4 +17,6 @@ class FlickableScroller {
   }
 }
 
-export { FlickableScroller, ScrollerOptions, ScrollEvent };
+export { FlickableScroller };
+
+export type { ScrollerOptions, ScrollEvent };
