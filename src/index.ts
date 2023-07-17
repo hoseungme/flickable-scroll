@@ -6,7 +6,7 @@ import {
   TouchScroller,
 } from "./scroller";
 
-export class FlickTouchScroll {
+export class FlickableScroller {
   private readonly scroller: Scroller;
   public readonly events: Events<ScrollerEvent, Scroller>;
 
