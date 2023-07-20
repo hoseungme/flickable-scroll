@@ -43,6 +43,7 @@ export class Scroller {
   public readonly tracker: Tracker;
   public readonly animator: Animator;
   public readonly events: Events<ScrollerEvent, Scroller>;
+  private scrollLock = false;
   protected readonly options: ScrollerOptions;
 
   constructor(container: HTMLElement, options?: ScrollerOptions) {
@@ -76,11 +77,19 @@ export class Scroller {
   }
 
   protected start() {
+    if (this.scrollLock) {
+      return;
+    }
+
     this.animator.stop();
     this.events.emit("scrollStart");
   }
 
   protected move({ distance }: { distance: number }) {
+    if (this.scrollLock) {
+      return;
+    }
+
     const distanceRatio = sign(this.tracker.position) !== sign(distance) ? 1 : 1 - this.tracker.overflowRatio;
 
     this.animator.start([
@@ -94,6 +103,10 @@ export class Scroller {
   }
 
   protected end() {
+    if (this.scrollLock) {
+      return;
+    }
+
     if (this.tracker.position < this.tracker.minPosition) {
       const distance = this.tracker.minPosition - this.tracker.position;
 
@@ -154,6 +167,14 @@ export class Scroller {
     }
 
     this.events.emit("scrollEnd");
+  }
+
+  public lock() {
+    this.scrollLock = true;
+  }
+
+  public unlock() {
+    this.scrollLock = false;
   }
 
   public destroy() {

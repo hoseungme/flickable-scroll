@@ -7,6 +7,14 @@ class FlickableScroller {
     this.scroller = new TouchScroller(container, options);
   }
 
+  public lock() {
+    this.scroller.lock();
+  }
+
+  public unlock() {
+    this.scroller.unlock();
+  }
+
   public destroy() {
     this.scroller.destroy();
   }
