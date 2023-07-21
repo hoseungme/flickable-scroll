@@ -1,6 +1,6 @@
 {
   "name": "flickable-scroll",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "A flickable web scroller",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
