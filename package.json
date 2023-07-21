@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.ts --format cjs,esm --dts --minify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
