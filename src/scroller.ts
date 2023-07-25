@@ -189,9 +189,9 @@ export class TouchScroller extends Scroller {
   constructor(container: HTMLElement, options?: ScrollerOptions) {
     super(container, options);
 
-    this.container.addEventListener("touchstart", this.touchstart.bind(this));
-    this.container.addEventListener("touchmove", this.touchmove.bind(this));
-    this.container.addEventListener("touchend", this.touchend.bind(this));
+    this.container.addEventListener("touchstart", this.touchstart);
+    this.container.addEventListener("touchmove", this.touchmove);
+    this.container.addEventListener("touchend", this.touchend);
   }
 
   private parseTouch(touch: Touch) {
@@ -200,15 +200,15 @@ export class TouchScroller extends Scroller {
     };
   }
 
-  private touchstart(e: TouchEvent) {
+  private touchstart = (e: TouchEvent) => {
     const touch = this.parseTouch(e.changedTouches[0]);
 
     this.currentTouchPosition = touch.position;
 
     this.start();
-  }
+  };
 
-  private touchmove(e: TouchEvent) {
+  private touchmove = (e: TouchEvent) => {
     if (this.currentTouchPosition == null) {
       return;
     }
@@ -219,17 +219,69 @@ export class TouchScroller extends Scroller {
     this.move({ distance });
 
     this.currentTouchPosition = touch.position;
-  }
+  };
 
-  private touchend() {
+  private touchend = () => {
     this.currentTouchPosition = null;
     this.end();
-  }
+  };
 
   public destroy() {
-    this.container.removeEventListener("touchstart", this.touchstart.bind(this));
-    this.container.removeEventListener("touchmove", this.touchmove.bind(this));
-    this.container.removeEventListener("touchend", this.touchend.bind(this));
+    this.container.removeEventListener("touchstart", this.touchstart);
+    this.container.removeEventListener("touchmove", this.touchmove);
+    this.container.removeEventListener("touchend", this.touchend);
+    super.destroy();
+  }
+}
+
+export class MouseScroller extends Scroller {
+  private currentMousePosition: number | null = null;
+
+  constructor(container: HTMLElement, options?: ScrollerOptions) {
+    super(container, options);
+
+    this.container.addEventListener("mousedown", this.mousedown);
+    this.container.addEventListener("mousemove", this.mousemove);
+    this.container.addEventListener("mouseup", this.mouseup);
+    this.container.addEventListener("mouseleave", this.mouseup);
+  }
+
+  private parseEvent(e: MouseEvent) {
+    return {
+      position: this.options.direction === "x" ? e.clientX : e.clientY,
+    };
+  }
+
+  private mousedown = (e: MouseEvent) => {
+    const parsed = this.parseEvent(e);
+
+    this.currentMousePosition = parsed.position;
+    this.start();
+  };
+
+  private mousemove = (e: MouseEvent) => {
+    if (this.currentMousePosition == null) {
+      return;
+    }
+
+    const parsed = this.parseEvent(e);
+    const distance = parsed.position - this.currentMousePosition;
+
+    this.move({ distance: distance });
+
+    this.currentMousePosition = parsed.position;
+  };
+
+  private mouseup = () => {
+    this.currentMousePosition = null;
+    this.end();
+  };
+
+  public destroy() {
+    this.container.removeEventListener("mousedown", this.mousedown);
+    this.container.removeEventListener("mousemove", this.mousemove);
+    this.container.removeEventListener("mouseup", this.mouseup);
+    this.container.removeEventListener("mouseleave", this.mouseup);
     super.destroy();
   }
 }
