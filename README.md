@@ -176,3 +176,10 @@ scroller.destory();
       - `onScrollEnd`: `(e: ScrollEvent) => void`
         - Optional
         - This function will fire when a user finishes to scroll
+- Methods of `FlickableScroller`:
+  - `lock()`: `() => void`
+    - This method locks scroll of the scroller.
+  - `unlock()`: `() => void`
+    - This method unlocks scroll of the scroller.
+  - `destroy()`: `() => void`
+    - This method destory the scroller. All event handlers will be removed, and all animations will be stopped.
